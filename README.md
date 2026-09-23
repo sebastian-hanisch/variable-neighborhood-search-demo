@@ -1,9 +1,9 @@
 # Variable Neighborhood Search – eine Lieferrunde, deren Störstärke sich selbst anpasst – Streamlit-Demo
 
-**[→ Demo live ausprobieren](#)** (Deploy offen)
+**[→ Demo live ausprobieren](https://sebastianhanisch-variable-neighborhood-search-demo.streamlit.app/)**
 
 Viertes Stück der **Trajektorien-Metaheuristiken-Linie** der "Konzepte"-Reihe für die Website "Sebastian Hanisch – Operations Research und Machine Learning":
-dieselbe Rundtour wie in der [hill-climbing-demo](../hill-climbing-demo), der [simulated-annealing-demo](../simulated-annealing-demo) und der [iterated-local-search-demo](../iterated-local-search-demo) (ein Depot, n Kundenstopps in einem 100 × 100-km-Gebiet), dieselbe untere Schranke.
+dieselbe Rundtour wie in der [hill-climbing-demo](https://sebastianhanisch-hill-climbing-demo.streamlit.app/), der [simulated-annealing-demo](https://sebastianhanisch-simulated-annealing-demo.streamlit.app/) und der [iterated-local-search-demo](https://sebastianhanisch-iterated-local-search-demo.streamlit.app/) (ein Depot, n Kundenstopps in einem 100 × 100-km-Gebiet), dieselbe untere Schranke.
 
 **Einordnung in die Reihe:** **Variable Neighborhood Search** (VNS, Mladenović & Hansen 1997) baut direkt auf Iterated Local Search auf und löst dessen offene Frage: ILS brauchte eine **feste** Störstärke (in der Schwester-Demo von Hand kalibriert: 2-3 Doppelbrücken, nicht der literaturübliche Standardwert 1). VNS ersetzt den festen Regler durch ein systematisches Verfahren: die Störstärke $k$ startet bei 1, **wächst** nach einem erfolglosen Kick und wird nach einem **Erfolg auf 1 zurückgesetzt**.
 ```
@@ -58,7 +58,7 @@ Die einzelne Standardinstanz landet auch hier durch Zufall oft sehr nah am echte
 
 ## Modell und Verfahren
 
-- **Instanz, Nachbarschaften, Abstieg, Schranke, Doppelbrücke, Kandidatenliste + Don't-Look-Bits** (`vns_scenario.py`, `vns_tour.py`, `vns_kick.py`, `vns_dlb.py`): wortgleiche Kopien aus der [iterated-local-search-demo](../iterated-local-search-demo) (die ihrerseits aus der [hill-climbing-demo](../hill-climbing-demo)/[simulated-annealing-demo](../simulated-annealing-demo) stammen) – gegen eingefrorene Werte testen, wie bei jedem bisherigen Stück.
+- **Instanz, Nachbarschaften, Abstieg, Schranke, Doppelbrücke, Kandidatenliste + Don't-Look-Bits** (`vns_scenario.py`, `vns_tour.py`, `vns_kick.py`, `vns_dlb.py`): wortgleiche Kopien aus der [iterated-local-search-demo](https://sebastianhanisch-iterated-local-search-demo.streamlit.app/) (die ihrerseits aus der [hill-climbing-demo](https://sebastianhanisch-hill-climbing-demo.streamlit.app/)/[simulated-annealing-demo](https://sebastianhanisch-simulated-annealing-demo.streamlit.app/) stammen) – gegen eingefrorene Werte testen, wie bei jedem bisherigen Stück.
 - **Basic VNS** (`vns_algorithm.py`): erster Abstieg aus der Startlösung, dann: Shake mit $k$ Doppelbrücken → Wiederabstieg → bei Erfolg übernehmen und $k \leftarrow 1$, sonst verwerfen und $k \leftarrow k+1$ (bei $k > k_{\max}$: zurück auf 1). VND (mehrere Nachbarschaften als lokale Suche) ist bewusst NICHT gebaut – laut DAG-Planung kein eigener Knoten, höchstens ein Umschalter, den dieses Stück nicht braucht.
 - **Vergleichsgrößen ohne Cross-Import** (`vns_evaluation.py`): `ils_fixed_strength` (Kopie der ILS-Schleife mit fester Störstärke 1 bzw. 3), `hill_climbing_restarts`/`dlb_restarts` (wortgleich aus der ILS-Demo) – jedes Repo der Linie ist eigenständig lauffähig.
 - **Auswertung**: Kennzahlen, Urteil, Sweeps über feste Instanzen × Ketten, Reset-Ablation, Streuung, Skalierung.
