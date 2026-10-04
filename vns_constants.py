@@ -35,8 +35,10 @@ DEFAULT_BUDGET = 200000
 #   ILS Staerke1 1.56   1.12   0.81   0.78   0.66   0.58   0.50   0.47
 #   ILS Staerke3 1.35   0.81   0.74   0.68   0.65   0.65   0.54   0.47
 #   HC-Neustarts Kandidatenliste+DLB (fair)  2.35  1.37  0.97  0.78  0.68  0.61  0.59  0.58
-# Mit dem KALIBRIERTEN k_max schlaegt VNS bei JEDEM gemessenen Budget beide festen ILS-Varianten oder liegt gleichauf - anders als mit
-# k_max=8 (siehe k_max-Sweep unten), wo VNS bei kleinem Budget hinter die naive Staerke 1 zurueckfaellt. WICHTIGER, unerwarteter Fund:
+# Mit dem KALIBRIERTEN k_max schlaegt VNS bei JEDEM gemessenen Budget die naive Staerke 1 (oder liegt gleichauf), den von Hand kalibrierten
+# Sweet Spot (Staerke 3) bei knappem (10T) und grossem Budget (ab 200T) - aber NICHT bei 25T-100T, dort liegt Staerke 3 um 0.04-0.09
+# Prozentpunkte vorn (0.81/0.74/0.68 gegen 0.85/0.80/0.77). Anders als mit k_max=8 (siehe k_max-Sweep unten), wo VNS bei kleinem Budget
+# hinter die naive Staerke 1 zurueckfaellt. WICHTIGER, unerwarteter Fund:
 # welche feste Staerke der "Sweet Spot" ist, aendert sich selbst mit dem Budget (3 gewinnt bei 25T-200T, aber 1 wird ab 500T besser als 3:
 # 0.58 vs 0.65 bei 500T, 0.50 vs 0.54 bei 1M) - eine feste Staerke ist also KEIN robuster Fixpunkt, VNS trifft die jeweils bessere Wahl
 # trotzdem, ohne sie zu kennen.
