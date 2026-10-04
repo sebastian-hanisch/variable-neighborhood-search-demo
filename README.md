@@ -11,18 +11,18 @@ hill-climbing-demo (Wurzel: nur bergab, bleibt im ersten Optimum stecken)       
   ├─ simulated-annealing-demo (nimmt Verschlechterungen an, Abkühlplan)          [gebaut]
   ├─ iterated-local-search-demo (stört ein gutes Optimum mit fester Störstärke)  [gebaut]
   │     └─ variable-neighborhood-search-demo (Störstärke eskaliert + Reset)     [dieses Stück]
-  │           └─ ALNS (lernt, welcher Umbau sich lohnt, statt blind zu eskalieren)   [nicht gebaut]
-  ├─ Tabu Search              (Gedächtnis gegen Rückwege)                        [nicht gebaut]
-  └─ GRASP                    (randomisierte Konstruktion, viele Starts)         [nicht gebaut]
+  │           └─ ALNS (lernt, welcher Umbau sich lohnt, statt blind zu eskalieren)   [gebaut]
+  ├─ Tabu Search              (Gedächtnis gegen Rückwege)                        [gebaut]
+  └─ GRASP                    (randomisierte Konstruktion, viele Starts)         [gebaut]
 ```
 
-Ergebnis in Kürze: **mit einer vernünftig gewählten Obergrenze $k_{\max}$ schlägt VNS bei JEDEM gemessenen Budget sowohl die naive feste Störstärke 1 als auch den von Hand kalibrierten Sweet Spot (Störstärke 3) – oder liegt gleichauf.** 60 Stopps, 10 Tausend Vorschläge: VNS **1.23 %** über der Schranke gegen 1.56 % (Störstärke 1) und 1.35 % (Störstärke 3); bei 200 Tausend: 0.63 % gegen 0.66 % und 0.65 %.
-Der eigentliche Überraschungsfund: **der "Sweet Spot" selbst ist nicht robust** – bei mittlerem Budget gewinnt Störstärke 3, ab etwa 500 Tausend Vorschlägen dreht es sich zugunsten der naiven Störstärke 1 (0.50 % gegen 0.54 % bei 1 Million). VNS trifft die jeweils bessere Wahl trotzdem, ohne sie vorher zu kennen. Zwei Einschränkungen: die Obergrenze $k_{\max}$ selbst braucht eine (kleinere) Kalibrierung (zu groß verschenkt bei knappem Budget), und das **Zurücksetzen** bei Erfolg ist der eigentliche Hebel – ohne es verliert VNS klar (0.72 % gegen 0.63 % bei 200 Tausend).
+Ergebnis in Kürze: **mit einer vernünftig gewählten Obergrenze $k_{\max}$ schlägt VNS bei JEDEM gemessenen Budget die naive feste Störstärke 1 (oder liegt gleichauf) und den von Hand kalibrierten Sweet Spot (Störstärke 3) bei knappem (10 Tausend) und bei großem Budget (ab 200 Tausend); bei 25 bis 100 Tausend liegt der Sweet Spot vorn.** 60 Stopps, 10 Tausend Vorschläge: VNS **1.23 %** über der Schranke gegen 1.56 % (Störstärke 1) und 1.35 % (Störstärke 3); bei 200 Tausend: 0.63 % gegen 0.66 % und 0.65 %; bei 25 / 50 / 100 Tausend dagegen VNS 0.85 / 0.80 / 0.77 % gegen 0.81 / 0.74 / 0.68 % (Störstärke 3).
+Der eigentliche Überraschungsfund: **der "Sweet Spot" selbst ist nicht robust** – bei mittlerem Budget gewinnt Störstärke 3, ab etwa 500 Tausend Vorschlägen dreht es sich zugunsten der naiven Störstärke 1 (0.50 % gegen 0.54 % bei 1 Million). Bei großem Budget trifft VNS die bessere Wahl trotzdem, ohne sie vorher zu kennen. Zwei Einschränkungen: die Obergrenze $k_{\max}$ selbst braucht eine (kleinere) Kalibrierung (zu groß verschenkt bei knappem Budget), und das **Zurücksetzen** bei Erfolg ist der eigentliche Hebel – ohne es verliert VNS klar (0.72 % gegen 0.63 % bei 200 Tausend).
 
 | Frage | Ergebnis (60 gleichverteilte Stopps, Kandidatenliste + DLB, k_max=5, zufällige Startlösung; Mittel über 5 feste Instanzen, Seeds 100000–100004, mit je 3 Ketten-Seeds; Abstand = Prozent über der 1-Baum-Schranke) |
 |---|---|
 | Standardfall | ✅ VNS **0.63 %** über der Schranke gegen ILS Störstärke 1 (naiv) 0.66 %, ILS Störstärke 3 (Sweet Spot) 0.65 %, HC-Neustarts (Kandidatenliste + DLB) 0.68 % |
-| **Budget** | ✅ VNS bei 10 / 25 / 50 / 100 / 200 Tausend / 0.5 / 1 / 2 Millionen: **1.23 / 0.85 / 0.80 / 0.77 / 0.63 / 0.56 / 0.47 / 0.47 %** – schlägt oder erreicht bei JEDEM Budget die jeweils bessere feste Störstärke |
+| **Budget** | ✅ VNS bei 10 / 25 / 50 / 100 / 200 Tausend / 0.5 / 1 / 2 Millionen: **1.23 / 0.85 / 0.80 / 0.77 / 0.63 / 0.56 / 0.47 / 0.47 %** – schlägt oder erreicht bei JEDEM Budget die naive Störstärke 1, den Sweet Spot (Störstärke 3: 1.35 / 0.81 / 0.74 / 0.68 / 0.65 / 0.65 / 0.54 / 0.47 %) bei 10 Tausend und ab 200 Tausend; bei 25-100 Tausend liegt er vorn |
 | **Der Sweet Spot selbst verschiebt sich** | ❗ ILS Störstärke 3 schlägt Störstärke 1 bei 25-200 Tausend (z. B. 0.65 gegen 0.66 % bei 200T); ab 500 Tausend dreht es sich (0.58 gegen 0.65 % bei 500T, 0.50 gegen 0.54 % bei 1M) – eine feste Störstärke ist kein robuster Fixpunkt |
 | **k_max** | ⚠️ Bei 10 Tausend Vorschlägen: k_max=2 → 1.71 %, k_max=3 → **1.19 %** (bestes gemessen), k_max=5 → 1.23 % (Voreinstellung), k_max=8 → 1.70 % – ein Sweet Spot, kein "größer ist besser" |
 | **Zurücksetzen** | ❗ Mit Reset (echtes VNS) 0.63 %, ohne Reset (k eskaliert bei Erfolg NICHT zurück) 0.72 % (200 Tausend) – das Zurücksetzen ist der eigentliche Hebel, nicht nur das Eskalieren |
@@ -65,7 +65,7 @@ Die einzelne Standardinstanz landet auch hier durch Zufall oft sehr nah am echte
 
 ## Was nicht funktioniert hat / Grenzen
 
-- **Vorab-Vermutung: "VNS erreicht den von Hand gefundenen ILS-Sweet-Spot, ohne ihn zu kennen"** – **mehr als bestätigt**: mit dem kalibrierten $k_{\max}=5$ schlägt VNS bei JEDEM gemessenen Budget beide festen Störstärken oder liegt gleichauf. Der eigentliche Überraschungsfund ging noch weiter: **der Sweet Spot selbst ist nicht robust über das Budget** – Störstärke 3 gewinnt bei 25-200 Tausend, ab 500 Tausend gewinnt die naive Störstärke 1 (0.50 gegen 0.54 % bei 1 Million). Ein fester Regler wäre also selbst bei sorgfältiger Kalibrierung fragil gegenüber Budgetänderungen; VNS umgeht dieses Problem, ohne es zu kennen.
+- **Vorab-Vermutung: "VNS erreicht den von Hand gefundenen ILS-Sweet-Spot, ohne ihn zu kennen"** – **bei knappem und großem Budget bestätigt, dazwischen nicht**: mit dem kalibrierten $k_{\max}=5$ schlägt VNS die naive Störstärke 1 bei JEDEM gemessenen Budget (oder liegt gleichauf) und den Sweet Spot bei 10 Tausend und ab 200 Tausend; bei 25-100 Tausend liegt der Sweet Spot vorn (VNS 0.85 / 0.80 / 0.77 % gegen 0.81 / 0.74 / 0.68 %). Der eigentliche Überraschungsfund ging noch weiter: **der Sweet Spot selbst ist nicht robust über das Budget** – Störstärke 3 gewinnt bei 25-200 Tausend, ab 500 Tausend gewinnt die naive Störstärke 1 (0.50 gegen 0.54 % bei 1 Million). Ein fester Regler wäre also selbst bei sorgfältiger Kalibrierung fragil gegenüber Budgetänderungen; VNS umgeht dieses Problem, ohne es zu kennen.
 - **$k_{\max}$ ist selbst ein Kalibrierungsparameter, nur ein kleinerer.** Bei knappem Budget (10 Tausend) ist $k_{\max}=8$ fast so schlecht wie $k_{\max}=2$ (1.70 gegen 1.71 %), $k_{\max}=3$-$5$ liegt klar davor (1.19-1.23 %) – ein erster Entwurf mit $k_{\max}=8$ (der maximale Bereich des Reglers) hätte VNS bei knappem Budget schlechter als die naive feste Störstärke aussehen lassen; erst die eigene Kalibrierungsmessung deckte das auf und führte zum Default $k_{\max}=5$.
 - **Das Zurücksetzen ist der eigentliche Hebel, nicht nur das Eskalieren.** Die Ablation "ohne Reset" (k eskaliert bei Erfolg nicht zurück auf 1) verliert bei jedem gemessenen Budget gegen die echte Regel (200 Tausend: 0.72 gegen 0.63 %) – wer nur "wachsende Störstärke" ohne Rückfall implementiert, verschenkt einen wesentlichen Teil des Verfahrens.
 - **Startlösung ist bei VNS fast egal** (0.63 % gegen 0.63 %), wie schon bei Iterated Local Search – die vielen Shakes vergessen sie schneller, als ein einzelner Abstieg es könnte.
@@ -110,6 +110,4 @@ pytest tests/ -v
 
 ---
 
-Teil des [Operations-Research-Demo-Portfolios](https://sebastianhanisch.net/demos.html) von
-[Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning.
-Interesse an einer maßgeschneiderten Lösung? [Kontakt aufnehmen](https://sebastianhanisch.net/kontakt.html).
+Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). Mehr zur Reihe: [Trajektorien-Metaheuristiken: HC bis ALNS](https://sebastianhanisch.net/konzepte-trajektorien-metaheuristiken.html).

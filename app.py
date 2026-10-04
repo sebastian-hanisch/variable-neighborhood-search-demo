@@ -311,9 +311,9 @@ if st.session_state.get("budget_on"):
     st.table({"Budget": [_fmt_int(r["value"]) for r in rows_b], "VNS (%)": [f"{r['gap']:.2f}" for r in rows_b],
               "ILS Störstärke 3 (%)": [f"{r['ils3']:.2f}" for r in rows_b], "ILS Störstärke 1 (%)": [f"{r['ils1']:.2f}" for r in rows_b],
               "HC-Neustarts, Kandidatenliste+DLB (%)": [f"{r['dlbr']:.2f}" for r in rows_b]})
-    st.caption("Mittel über 5 feste Instanzen × 3 Ketten (60 Stopps, Kandidatenliste + DLB, k_max=5). Mit dem kalibrierten k_max **schlägt VNS bei jedem gemessenen Budget sowohl die naive feste Störstärke 1 als auch den von Hand gefundenen Sweet Spot (Störstärke 3)** oder liegt gleichauf - "
+    st.caption("Mittel über 5 feste Instanzen × 3 Ketten (60 Stopps, Kandidatenliste + DLB, k_max=5). Mit dem kalibrierten k_max **schlägt VNS bei jedem gemessenen Budget die naive feste Störstärke 1 (oder liegt gleichauf) und den von Hand gefundenen Sweet Spot (Störstärke 3) bei knappem (10 Tausend) und bei großem Budget (ab 200 Tausend)**; bei 25 bis 100 Tausend liegt der Sweet Spot vorn (VNS 0.85 / 0.80 / 0.77 % gegen 0.81 / 0.74 / 0.68 %) - "
                "10 Tausend: VNS 1.23 % gegen 1.56 % (Störstärke 1) und 1.35 % (Störstärke 3); 200 Tausend: 0.63 % gegen 0.66 % und 0.65 %. Bei sehr großem Budget (1-2 Millionen) dreht sich, WELCHE feste Störstärke die bessere ist (1 wird besser als 3: 0.50 gegen 0.54 % bei 1 Million) - "
-               "**der 'Sweet Spot' ist selbst budgetabhängig, nicht universell**, und genau das macht eine feste Störstärke fragil. VNS trifft die jeweils beste Wahl trotzdem, ohne sie zu kennen (0.47 % bei 1-2 Millionen, gleichauf mit der jeweils besseren festen Störstärke). "
+               "**der 'Sweet Spot' ist selbst budgetabhängig, nicht universell**, und genau das macht eine feste Störstärke fragil. Bei großem Budget trifft VNS die bessere Wahl trotzdem, ohne sie zu kennen (0.47 % bei 1-2 Millionen, gleichauf mit der jeweils besseren festen Störstärke). "
                "Mit einem zu großen k_max (8 statt 5) kippt das Bild bei knappem Budget allerdings (siehe k_max-Experiment) - die Robustheit hängt an einer vernünftig gewählten Obergrenze, nicht am Prinzip allein.")
 
 st.markdown("---")
@@ -375,7 +375,7 @@ st.markdown(
     """
 | Annahme | Was passiert, wenn sie verletzt ist | Wer setzt an |
 |---|---|---|
-| **Das Budget reicht für mehrere Eskalationszyklen** | Bei sehr knappem Budget (5-10 Tausend) verliert VNS sogar gegen die naive feste Störstärke 1 - das Eskalieren selbst kostet Bewertungen, bevor ein Erfolg zurücksetzt. Erst ab etwa 25 Tausend erreicht VNS den von Hand kalibrierten Sweet Spot. | **ALNS** (lernt, welcher Umbau sich lohnt, statt blind zu eskalieren) |
+| **Das Budget reicht für mehrere Eskalationszyklen** | Bei sehr knappem Budget (10 Tausend) kostet das Eskalieren selbst Bewertungen, bevor ein Erfolg zurücksetzt: mit k_max=8 verliert VNS gegen die naive feste Störstärke 1 (1.70 % gegen 1.56 %), mit dem kalibrierten k_max=5 gewinnt es (1.23 %). Bei 25 bis 100 Tausend liegt der von Hand kalibrierte Sweet Spot noch vorn (VNS 0.85 / 0.80 / 0.77 % gegen 0.81 / 0.74 / 0.68 %); erst ab etwa 200 Tausend erreicht VNS ihn. | **ALNS** (lernt, welcher Umbau sich lohnt, statt blind zu eskalieren) |
 | **k_max ist selbst kalibriert** | k_max=8 ist bei knappem Budget (10 Tausend) fast so schlecht wie k_max=2 (**1.70 %** gegen **1.71 %**); k_max=3-5 liegt klar davor (**1.19-1.23 %**) - VNS nimmt einem also nicht JEDE Kalibrierung ab, nur die der Störstärke selbst. | (Kalibrierungsfrage, kein Verfahrensnachfolger) |
 | **Das Zurücksetzen passiert** | Ohne Reset (k bleibt nach einem Erfolg stehen statt auf 1 zu fallen): **0.72 %** gegen **0.63 %** bei 200 Tausend Vorschlägen - das Zurücksetzen ist der eigentliche Hebel, nicht nur das Eskalieren. | Kein direkter Nachfolger; die Lehre gilt sinngemäß für jedes eskalierende Verfahren |
 | **Die lokale Suche ist billig** | Ohne Kandidatenliste + DLB (voller Rescan): **4.32 %** bei nur rund 8 Iterationen statt 0.63 % bei rund 974 (200 Tausend Vorschläge) - dieselbe Lehre wie bei Iterated Local Search. | Kein Nachfolger nötig - gilt für jede iterative Metaheuristik mit vielen Wiederabstiegen |
@@ -411,6 +411,6 @@ Implementiert in `vns_kick.py` (Doppelbrücke, wortgleich aus der ILS-Demo), `vn
 st.markdown("---")
 st.caption(
     "Diese Demo ist Teil des Portfolios von [Sebastian Hanisch](https://sebastianhanisch.net) – "
-    "Operations Research und Machine Learning. Interesse an einer maßgeschneiderten Lösung für "
-    "Ihr Unternehmen? [Kontakt aufnehmen](https://sebastianhanisch.net/kontakt.html)"
+    "Operations Research und Machine Learning ([Über mich](https://sebastianhanisch.net/ueber-mich.html)). "
+    "Mehr zur Reihe: [Trajektorien-Metaheuristiken: HC bis ALNS](https://sebastianhanisch.net/konzepte-trajektorien-metaheuristiken.html)."
 )
