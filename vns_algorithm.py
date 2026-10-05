@@ -47,7 +47,7 @@ def run(D, start, cand=None, local_search="dlb", k_max=8, reset_on_success=True,
         raise ValueError(k_max)
     rng = np.random.default_rng(seed)
     evaluations = iterations = successes = 0
-    trace_every = max(1, budget // trace_points)
+    trace_every = max(1, budget // trace_points)                      # Abstand der Verlaufspunkte in BEWERTETEN NACHBARN (nicht in Iterationen: eine Iteration kostet viele Bewertungen)
 
     # Erster Abstieg aus der Startlösung (touched=None: die ganze Tour muss optimiert werden) - das eigentliche VNS
     # beginnt erst danach, mit Shakes AUF einem bereits lokal optimalen Tour.
@@ -63,6 +63,7 @@ def run(D, start, cand=None, local_search="dlb", k_max=8, reset_on_success=True,
     snapshots = [current.copy()] if keep_snapshots else []
     k_trace = []
     tr_it, tr_len, tr_best = [evaluations], [current_length], [current_length]
+    next_trace = (evaluations // trace_every + 1) * trace_every
 
     k = 1
     while evaluations < budget:
@@ -91,10 +92,11 @@ def run(D, start, cand=None, local_search="dlb", k_max=8, reset_on_success=True,
             best_length, best_tour = current_length, current.copy()
         if keep_snapshots:
             snapshots.append(current.copy())
-        if iterations % trace_every == 0 or evaluations >= budget:
+        if evaluations >= next_trace or evaluations >= budget:
             tr_it.append(evaluations)
             tr_len.append(current_length)
             tr_best.append(best_length)
+            next_trace = (evaluations // trace_every + 1) * trace_every
 
     final_length = T.tour_length(current, D)                          # Rundungsfehler der Delta-Summen beseitigen
     best_length = T.tour_length(best_tour, D)

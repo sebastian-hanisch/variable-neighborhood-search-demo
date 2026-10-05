@@ -339,7 +339,7 @@ if st.session_state.get("reset_on"):
         rows_r = _reset_ablation(base_sweep)
     st.table({"Regel": list(rows_r.keys()), "Beste Tour (%)": [f"{v['gap']:.2f}" for v in rows_r.values()], "Letzte Tour (%)": [f"{v['final']:.2f}" for v in rows_r.values()]})
     st.caption("Mittel über 5 feste Instanzen × 3 Ketten (200 Tausend Vorschläge). Mit Reset (echtes VNS): **0.63 %**. Ohne Reset (k eskaliert bei Erfolg NICHT zurück auf 1, sondern bleibt): **0.72 %** - "
-               "das Zurücksetzen selbst ist der Hebel, nicht nur das Eskalieren an sich. Bei knapperem Budget ist der Unterschied relativ noch größer (15-22 % schlechter ohne Reset).")
+               "das Zurücksetzen selbst ist der Hebel, nicht nur das Eskalieren an sich. Bei knapperem Budget ist der Unterschied relativ noch größer (ohne Reset liegt der Abstand zur Schranke um 15-22 % höher als mit Reset).")
 
 st.markdown("---")
 
